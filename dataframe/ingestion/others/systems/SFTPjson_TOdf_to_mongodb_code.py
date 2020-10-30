@@ -50,8 +50,8 @@ if __name__ == '__main__':
         .write \
         .format("com.mongodb.spark.sql.DefaultSource") \
         .mode("overwrite") \
-        .option("database", app_conf["mongodb_config"]["database"]) \
-        .option("collection", "KC_extract_collection") \
+        .option("database", "school") \
+        .option("collection", "KCextractCollection") \
         .save()
 
 
