@@ -7,14 +7,7 @@ import os.path
 import yaml
 
 if __name__ == '__main__':
-    # Create the SparkSession
-    spark = SparkSession \
-        .builder \
-        .appName("DataFrames examples") \
-        .master('local[*]') \
-        .config('spark.jars.packages', 'com.springml:spark-sftp_2.11:1.1.1') \
-        .getOrCreate()
-    spark.sparkContext.setLogLevel('ERROR')
+
 
     current_dir = os.path.abspath(os.path.dirname(__file__))
     app_config_path = os.path.abspath(current_dir + "/../../../../" + "application.yml")
@@ -24,6 +17,23 @@ if __name__ == '__main__':
     app_conf = yaml.load(conf, Loader=yaml.FullLoader)
     secret = open(app_secrets_path)
     app_secret = yaml.load(secret, Loader=yaml.FullLoader)
+
+
+
+    # Create the SparkSession
+    spark = SparkSession \
+        .builder \
+        .appName("DataFrames examples") \
+        .master('local[*]') \
+        .config('spark.jars.packages', 'com.springml:spark-sftp_2.11:1.1.1') \
+        .config("spark.mongodb.input.uri", app_secret["mongodb_config"]["uri"]) \
+        .config("spark.mongodb.output.uri", app_secret["mongodb_config"]["uri"]) \
+        .getOrCreate()
+    spark.sparkContext.setLogLevel('ERROR')
+
+
+
+
 
     ol_txn_df = spark.read\
         .format("com.springml.spark.sftp")\
@@ -35,6 +45,30 @@ if __name__ == '__main__':
         .load(app_conf["sftp_conf"]["directory"] + "/KC_Extract_2_20171009.json")
 
     ol_txn_df.show(5, False)
+
+    ol_txn_df \
+        .write \
+        .format("com.mongodb.spark.sql.DefaultSource") \
+        .mode("overwrite") \
+        .option("database", app_conf["mongodb_config"]["database"]) \
+        .option("collection", "KC_extract_collection") \
+        .save()
+
+
+
+        # .mode("append") \
+        # .option("database", app_conf["mongodb_config"]["database"]) \
+        # .option("collection", app_conf["mongodb_config"]["collection"]) \
+        # .save()
+    #
+    # df01.write.format("com.mongodb.spark.sql.DefaultSource") \
+    #     .mode("overwrite") \
+    #     .option("database", "database01") \
+    #     .option("collection", "collection02") \
+    #     .save()
+    #
+
+
 
 
 
