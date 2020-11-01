@@ -8,6 +8,10 @@ import yaml
 
 if __name__ == '__main__':
 
+    os.environ["PYSPARK_SUBMIT_ARGS"] = (
+        '--packages "org.mongodb.spark:mongo-spark-connector_2.11:2.4.2" pyspark-shell'
+    )
+
 
     current_dir = os.path.abspath(os.path.dirname(__file__))
     app_config_path = os.path.abspath(current_dir + "/../../../../" + "application.yml")
@@ -56,25 +60,14 @@ if __name__ == '__main__':
 
 
 
-        # .mode("append") \
-        # .option("database", app_conf["mongodb_config"]["database"]) \
-        # .option("collection", app_conf["mongodb_config"]["collection"]) \
-        # .save()
-    #
-    # df01.write.format("com.mongodb.spark.sql.DefaultSource") \
-    #     .mode("overwrite") \
-    #     .option("database", "database01") \
-    #     .option("collection", "collection02") \
-    #     .save()
-    #
 
 
 
 
 
 
-# companies_df = spark.read.json("s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/company.json")
 
 
-# spark-submit --packages "com.springml:spark-sftp_2.11:1.1.1" dataframe/ingestion/others/systems/SFTPjson_TOdf_to_mongodb_code.py
 
+
+# spark-submit --packages "com.springml:spark-sftp_2.11:1.1.1" dataframe/ingestion/others/systems/json_mongo.py
